@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Budget Tracker</h1>
+  </header>
+  <main>
+    <!-- Budget Input -->
+    <section id="budget-section">
+      <h2>Set Your Budget</h2>
+      <input type="number" id="budget-input" placeholder="Enter Monthly Budget" required>
+      <button id="set-budget-btn">Set Budget</button>
+      <p id="budget-display">Budget: $0</p>
+    </section>
+
+    <!-- Expense Form -->
+    <section id="expense-section">
+      <h2>Add Expense</h2>
+      <form id="expense-form">
+        <input type="text" id="expense-name" placeholder="Expense Name" required>
+        <input type="number" id="expense-amount" placeholder="Amount" required>
+        <select id="expense-category" required>
+          <option value="">Category</option>
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Entertainment">Entertainment</option>
+        </select>
+        <button type="submit">Add Expense</button>
+      </form>
+    </section>
+
+    <!-- Expense List and Insights -->
+    <section id="insights-section">
+      <h2>Spending Overview</h2>
+      <ul id="expense-list"></ul>
+      <p id="remaining-budget">Remaining Budget: $0</p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
