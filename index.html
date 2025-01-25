@@ -3,45 +3,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="img/favicon.png">
   <title>Budget Tracker</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Add Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <header>
-    <h1>Budget Tracker</h1>
-  </header>
-  <main>
-    <!-- Budget Input -->
-    <section id="budget-section">
-      <h2>Set Your Budget</h2>
-      <input type="number" id="budget-input" placeholder="Enter Monthly Budget" required>
-      <button id="set-budget-btn">Set Budget</button>
-      <p id="budget-display">Budget: $0</p>
-    </section>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="img/favicon.png" alt="Budget Tracker Logo">
+        <h1>Budget Tracker</h1>
+      </div>
+      <nav>
+        <ul>
+          <li class="active" data-section="overview">
+            <i class="fas fa-home"></i>
+            <span>Overview</span>
+          </li>
+          <li data-section="expenses">
+            <i class="fas fa-receipt"></i>
+            <span>Expenses</span>
+          </li>
+          <li data-section="recurring">
+            <i class="fas fa-sync"></i>
+            <span>Recurring</span>
+          </li>
+          <li data-section="reports">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reports</span>
+          </li>
+        </ul>
+      </nav>
+    </aside>
 
-    <!-- Expense Form -->
-    <section id="expense-section">
-      <h2>Add Expense</h2>
-      <form id="expense-form">
-        <input type="text" id="expense-name" placeholder="Expense Name" required>
-        <input type="number" id="expense-amount" placeholder="Amount" required>
-        <select id="expense-category" required>
-          <option value="">Category</option>
-          <option value="Food">Food</option>
-          <option value="Transport">Transport</option>
-          <option value="Entertainment">Entertainment</option>
-        </select>
-        <button type="submit">Add Expense</button>
-      </form>
-    </section>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="currency-selector">
+          <div class="dropdown currency-dropdown">
+            <input type="checkbox" id="currency-dropdown">
+            <label class="dropdown__face" for="currency-dropdown">
+              <div class="dropdown__text">USD ($)</div>
+              <div class="dropdown__arrow"></div>
+            </label>
+            <ul class="dropdown__items">
+              <li data-value="USD">🇺🇸 USD ($)</li>
+              <li data-value="EUR">🇪🇺 EUR (€)</li>
+              <li data-value="GBP">🇬🇧 GBP (£)</li>
+              <li data-value="UGX">🇺🇬 UGX (USh)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-    <!-- Expense List and Insights -->
-    <section id="insights-section">
-      <h2>Spending Overview</h2>
-      <ul id="expense-list"></ul>
-      <p id="remaining-budget">Remaining Budget: $0</p>
-    </section>
-  </main>
+      <!-- Dashboard Sections -->
+      <div class="dashboard-sections">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+          <div class="quick-stats">
+            <div class="stat-card income">
+              <div class="stat-icon">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Monthly Income</h3>
+                <p id="income-display">$0</p>
+                <button id="set-income-btn" class="icon-button">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="stat-card budget">
+              <div class="stat-icon">
+                <i class="fas fa-piggy-bank"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Monthly Budget</h3>
+                <p id="budget-display">$0</p>
+                <button id="set-budget-btn" class="icon-button">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="stat-card expenses">
+              <div class="stat-icon">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Total Expenses</h3>
+                <p id="expenses-display">$0</p>
+              </div>
+            </div>
+
+            <div class="stat-card remaining">
+              <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Remaining</h3>
+                <p id="remaining-budget">$0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Spending by Category</h3>
+              <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Monthly Trend</h3>
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="recent-expenses">
+            <h3>Recent Expenses</h3>
+            <ul id="expense-list"></ul>
+          </div>
+        </section>
+
+        <!-- Other sections remain the same but wrapped in section tags -->
+        <section id="expenses" class="section">
+          <!-- Expense Form -->
+          <h2>Add Expense</h2>
+          <form id="expense-form">
+            <input type="text" id="expense-name" placeholder="Expense Name" required>
+            <input type="number" id="expense-amount" placeholder="Amount" required>
+            
+            <div class="dropdown">
+              <input type="checkbox" id="category-dropdown">
+              <label class="dropdown__face" for="category-dropdown">
+                <div class="dropdown__text">Select Category</div>
+                <div class="dropdown__arrow"></div>
+              </label>
+              <ul class="dropdown__items">
+                <li data-value="Food">🍔 Food</li>
+                <li data-value="Transport">🚗 Transport</li>
+                <li data-value="Entertainment">🎮 Entertainment</li>
+                <li data-value="Shopping">🛍️ Shopping</li>
+                <li data-value="Bills">📃 Bills</li>
+              </ul>
+            </div>
+
+            <button type="submit">Add Expense</button>
+          </form>
+        </section>
+
+        <section id="recurring" class="section">
+          <!-- Recurring Transactions -->
+          <h2>Recurring Expenses</h2>
+          <form id="recurring-form">
+            <input type="text" id="recurring-name" placeholder="Expense Name" required>
+            <input type="number" id="recurring-amount" placeholder="Amount" required>
+            
+            <div class="dropdown">
+              <input type="checkbox" id="recurring-category-dropdown">
+              <label class="dropdown__face" for="recurring-category-dropdown">
+                <div class="dropdown__text">Select Category</div>
+                <div class="dropdown__arrow"></div>
+              </label>
+              <ul class="dropdown__items">
+                <li data-value="Food">🍔 Food</li>
+                <li data-value="Transport">🚗 Transport</li>
+                <li data-value="Entertainment">🎮 Entertainment</li>
+                <li data-value="Shopping">🛍️ Shopping</li>
+                <li data-value="Bills">📃 Bills</li>
+              </ul>
+            </div>
+            
+            <div class="dropdown">
+              <input type="checkbox" id="recurring-frequency-dropdown">
+              <label class="dropdown__face" for="recurring-frequency-dropdown">
+                <div class="dropdown__text">Select Frequency</div>
+                <div class="dropdown__arrow"></div>
+              </label>
+              <ul class="dropdown__items">
+                <li data-value="weekly">🗓️ Weekly</li>
+                <li data-value="monthly">📅 Monthly</li>
+                <li data-value="quarterly">📊 Quarterly</li>
+                <li data-value="yearly">📆 Yearly</li>
+              </ul>
+            </div>
+            
+            <button type="submit">Add Recurring Expense</button>
+          </form>
+          
+          <ul id="recurring-list"></ul>
+        </section>
+
+        <section id="reports" class="section">
+          <!-- Financial Reports -->
+          <h2>Financial Reports</h2>
+          
+          <div class="report-controls">
+            <div class="dropdown">
+              <input type="checkbox" id="report-period-dropdown">
+              <label class="dropdown__face" for="report-period-dropdown">
+                <div class="dropdown__text">Select Period</div>
+                <div class="dropdown__arrow"></div>
+              </label>
+              <ul class="dropdown__items">
+                <li data-value="thisMonth">📅 This Month</li>
+                <li data-value="lastMonth">📅 Last Month</li>
+                <li data-value="last3Months">📊 Last 3 Months</li>
+                <li data-value="thisYear">📆 This Year</li>
+                <li data-value="custom">🗓️ Custom Range</li>
+              </ul>
+            </div>
+            
+            <div id="custom-date-range" style="display: none;">
+              <input type="date" id="start-date">
+              <input type="date" id="end-date">
+            </div>
+
+            <button id="generate-report-btn">Generate Report</button>
+            <button id="download-report-btn">Download Report</button>
+          </div>
+
+          <div class="report-summary">
+            <div class="summary-card">
+              <h3>Total Income</h3>
+              <p id="report-income">-</p>
+            </div>
+            <div class="summary-card">
+              <h3>Total Expenses</h3>
+              <p id="report-expenses">-</p>
+            </div>
+            <div class="summary-card">
+              <h3>Net Savings</h3>
+              <p id="report-savings">-</p>
+            </div>
+            <div class="summary-card">
+              <h3>Savings Rate</h3>
+              <p id="report-savings-rate">-</p>
+            </div>
+          </div>
+
+          <div class="report-details">
+            <div class="report-section">
+              <h3>Category Breakdown</h3>
+              <table id="category-breakdown">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>% of Total</th>
+                    <th>vs Budget</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="report-section">
+              <h3>Top Expenses</h3>
+              <table id="top-expenses">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="report-section">
+              <h3>Budget Analysis</h3>
+              <table id="budget-analysis">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Planned</th>
+                    <th>Actual</th>
+                    <th>Variance</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="income-modal">
+    <div class="modal-content">
+      <h2>Set Monthly Income</h2>
+      <input type="number" id="income-input" placeholder="Enter amount">
+      <div class="modal-buttons">
+        <button class="cancel-btn">Cancel</button>
+        <button class="save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="budget-modal">
+    <div class="modal-content">
+      <h2>Set Monthly Budget</h2>
+      <input type="number" id="budget-input" placeholder="Enter amount">
+      <div class="modal-buttons">
+        <button class="cancel-btn">Cancel</button>
+        <button class="save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG filter -->
+  <svg>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </svg>
+
   <script src="script.js"></script>
 </body>
 </html>
